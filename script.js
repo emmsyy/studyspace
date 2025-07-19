@@ -1,139 +1,128 @@
 let mode = 'pomodoro';
-let interval;
-let time = 1500; // default: 25 min
-let isRunning = false;
+let interval = null;
+
+let pomodoroMinutes = 25;
+let countdownMinutes = 5;
+let stopwatchSeconds = 0;
+let countdownInput = document.getElementById('countdownInput');
+let display = document.getElementById('display');
+
+function formatTime(totalSeconds) {
+  const mins = Math.floor(totalSeconds / 60);
+  const secs = totalSeconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
 
 function setMode(newMode) {
   clearInterval(interval);
-  isRunning = false;
   mode = newMode;
 
-  const display = document.getElementById("display");
-  const controls = document.getElementById("controls");
-  controls.innerHTML = "";
+  document.getElementById('countdownInputContainer').style.display = 'none';
 
-  switch (mode) {
-    case 'pomodoro':
-      time = 1500;
-      display.textContent = formatTime(time);
-      controls.innerHTML = `
-        <button onclick="startPomodoro()">Start</button>
-        <button onclick="pause()">Pause</button>
-        <button onclick="resetPomodoro()">Reset</button>
-      `;
-      break;
-
-    case 'countdown':
-      time = 0;
-      display.textContent = formatTime(time);
-      controls.innerHTML = `
-        <input id="countdownInput" type="number" placeholder="Minutes" min="1" />
-        <button onclick="startCountdown()">Start</button>
-        <button onclick="pause()">Pause</button>
-        <button onclick="resetCountdown()">Reset</button>
-      `;
-      break;
-
-    case 'stopwatch':
-      time = 0;
-      display.textContent = formatTime(time);
-      controls.innerHTML = `
-        <button onclick="startStopwatch()">Start</button>
-        <button onclick="pause()">Pause</button>
-        <button onclick="resetStopwatch()">Reset</button>
-      `;
-      break;
-
-    case 'clock':
-      updateClock();
-      interval = setInterval(updateClock, 1000);
-      break;
+  if (mode === 'pomodoro') {
+    display.textContent = `${pomodoroMinutes}:00`;
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('stopBtn').disabled = true;
+    document.getElementById('resetBtn').disabled = false;
+  } else if (mode === 'countdown') {
+    document.getElementById('countdownInputContainer').style.display = 'block';
+    display.textContent = "00:00";
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('stopBtn').disabled = true;
+    document.getElementById('resetBtn').disabled = true;
+  } else if (mode === 'stopwatch') {
+    stopwatchSeconds = 0;
+    display.textContent = "00:00";
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('stopBtn').disabled = true;
+    document.getElementById('resetBtn').disabled = false;
+  } else if (mode === 'clock') {
+    startClock();
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('stopBtn').disabled = true;
+    document.getElementById('resetBtn').disabled = true;
   }
 }
 
-function formatTime(t) {
-  const m = Math.floor(t / 60);
-  const s = t % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-// --- Pomodoro ---
-function startPomodoro() {
-  if (isRunning) return;
-  isRunning = true;
-  interval = setInterval(() => {
-    if (time > 0) {
-      time--;
-      document.getElementById("display").textContent = formatTime(time);
-    } else {
-      clearInterval(interval);
-      isRunning = false;
-      alert("Pomodoro complete!");
-    }
-  }, 1000);
-}
-
-function pause() {
+function startClock() {
   clearInterval(interval);
-  isRunning = false;
-}
-
-function resetPomodoro() {
-  pause();
-  time = 1500;
-  document.getElementById("display").textContent = formatTime(time);
-}
-
-// --- Countdown ---
-function startCountdown() {
-  if (isRunning) return;
-  const input = document.getElementById("countdownInput");
-  if (input && input.value) {
-    time = parseInt(input.value) * 60;
-  }
-  isRunning = true;
   interval = setInterval(() => {
-    if (time > 0) {
-      time--;
-      document.getElementById("display").textContent = formatTime(time);
-    } else {
-      clearInterval(interval);
-      isRunning = false;
-      alert("Time's up!");
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    display.textContent = timeString;
+  }, 1000);
+}
+
+let timerSecondsLeft = 0;
+
+function startTimer() {
+  if (mode === 'pomodoro') {
+    timerSecondsLeft = pomodoroMinutes * 60;
+  } else if (mode === 'countdown') {
+    const val = parseInt(countdownInput.value);
+    if (!val || val <= 0) {
+      alert('Please enter a valid number of minutes');
+      return;
     }
-  }, 1000);
-}
+    timerSecondsLeft = val * 60;
+    document.getElementById('resetBtn').disabled = false;
+  } else if (mode === 'stopwatch') {
+    // stopwatch counts up
+    interval = setInterval(() => {
+      stopwatchSeconds++;
+      display.textContent = formatTime(stopwatchSeconds);
+    }, 1000);
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('stopBtn').disabled = false;
+    return;
+  } else {
+    return; // clock mode has no timer start
+  }
 
-function resetCountdown() {
-  pause();
-  time = 0;
-  document.getElementById("display").textContent = formatTime(time);
-}
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('stopBtn').disabled = false;
 
-// --- Stopwatch ---
-function startStopwatch() {
-  if (isRunning) return;
-  isRunning = true;
   interval = setInterval(() => {
-    time++;
-    document.getElementById("display").textContent = formatTime(time);
+    if (timerSecondsLeft <= 0) {
+      clearInterval(interval);
+      alert("Time's up!");
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+      return;
+    }
+    timerSecondsLeft--;
+    display.textContent = formatTime(timerSecondsLeft);
   }, 1000);
 }
 
-function resetStopwatch() {
-  pause();
-  time = 0;
-  document.getElementById("display").textContent = formatTime(time);
+function stopTimer() {
+  clearInterval(interval);
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
 }
 
-// --- Clock ---
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2, '0');
-  const m = String(now.getMinutes()).padStart(2, '0');
-  const s = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById("display").textContent = `${h}:${m}:${s}`;
+function resetTimer() {
+  clearInterval(interval);
+
+  if (mode === 'pomodoro') {
+    display.textContent = `${pomodoroMinutes}:00`;
+  } else if (mode === 'countdown') {
+    display.textContent = "00:00";
+    document.getElementById('resetBtn').disabled = true;
+  } else if (mode === 'stopwatch') {
+    stopwatchSeconds = 0;
+    display.textContent = "00:00";
+  }
+
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
+
+  if (mode === 'clock') {
+    startClock();
+  }
 }
 
-// Default load
-setMode('pomodoro');
+// Initialize on page load
+window.onload = () => {
+  setMode('pomodoro');
+};
