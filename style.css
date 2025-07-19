@@ -7,7 +7,7 @@
   padding: 10px 20px;
   font-size: 1rem;
   background-color: rgba(0, 0, 0, 0.6);  /* Dark transparent background */
-  color: white;                          /* White text */
+  color: rgba(10, 0, 0, 0);                          /* White text */
   border: none;
   border-radius: 6px;
   cursor: pointer;
