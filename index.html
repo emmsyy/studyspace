@@ -3,18 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Study Timer</title>
+  <title>Study Utility</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="background"></div>
   <div class="container">
-    <h1>Pomodoro Timer</h1>
-    <div id="timer">25:00</div>
-    <div class="buttons">
-      <button onclick="startTimer()">Start</button>
-      <button onclick="pauseTimer()">Pause</button>
-      <button onclick="resetTimer()">Reset</button>
+    <h1>Study Timer Suite</h1>
+
+    <div class="mode-selector">
+      <button onclick="setMode('pomodoro')">Pomodoro</button>
+      <button onclick="setMode('countdown')">Timer</button>
+      <button onclick="setMode('stopwatch')">Stopwatch</button>
+      <button onclick="setMode('clock')">Clock</button>
+    </div>
+
+    <div id="display">00:00</div>
+
+    <div id="controls">
+      <!-- Controls change based on mode -->
     </div>
   </div>
   <script src="script.js"></script>
