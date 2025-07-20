@@ -1,4 +1,4 @@
-/* Background layer - replace URL with your own if desired */
+/* Background layer */
 .background {
   position: fixed;
   top: 0;
@@ -90,4 +90,55 @@ h1 {
 
 #controls button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.sidebar button {
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#galleryPanel {
+  display: none;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 10px;
+  width: 180px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.image-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.image-options img {
+  width: 100%;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.image-options img:hover {
+  transform: scale(1.05);
+}
+
+.image-options img.selected {
+  border: 3px solid white;
 }

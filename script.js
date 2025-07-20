@@ -67,7 +67,6 @@ function startTimer() {
     timerSecondsLeft = val * 60;
     document.getElementById('resetBtn').disabled = false;
   } else if (mode === 'stopwatch') {
-    // stopwatch counts up
     interval = setInterval(() => {
       stopwatchSeconds++;
       display.textContent = formatTime(stopwatchSeconds);
@@ -76,7 +75,7 @@ function startTimer() {
     document.getElementById('stopBtn').disabled = false;
     return;
   } else {
-    return; // clock mode has no timer start
+    return;
   }
 
   document.getElementById('startBtn').disabled = true;
@@ -122,7 +121,31 @@ function resetTimer() {
   }
 }
 
-// Initialize on page load
+// GALLERY FUNCTIONS
+
+let selectedBackground = '';
+
+function toggleGallery() {
+  const panel = document.getElementById('galleryPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function selectBackground(src) {
+  selectedBackground = src;
+  const allImages = document.querySelectorAll('.image-options img');
+  allImages.forEach(img => img.classList.remove('selected'));
+  const chosen = Array.from(allImages).find(img => img.src === src);
+  if (chosen) chosen.classList.add('selected');
+}
+
+function confirmBackground() {
+  if (selectedBackground) {
+    document.querySelector('.background').style.backgroundImage = `url('${selectedBackground}')`;
+    toggleGallery();
+  }
+}
+
+// Initialize
 window.onload = () => {
   setMode('pomodoro');
 };
